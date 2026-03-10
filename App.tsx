@@ -57,9 +57,9 @@ import {
 // ──────────────────────────────────────────────────────────────────────
 // Navigation  (react-navigation v6)
 // ──────────────────────────────────────────────────────────────────────
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+  import { NavigationContainer, useNavigation } from '@react-navigation/native';
+  import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+  import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // ──────────────────────────────────────────────────────────────────────
 // Expo modules
@@ -245,7 +245,7 @@ const T = {
   r4:  4, r8:  8, r12: 12, r16: 16, r24: 24,
 
   // Spacing
-  s4:  4, s8:  8, s12: 12, s16: 16, s20: 20, s24: 24, s32: 32,
+  s4:  4, s8:  8, s10: 10, s12: 12, s16: 16, s20: 20, s24: 24, s32: 32,
 } as const;
 
 // ══════════════════════════════════════════════════════════════════════
@@ -996,7 +996,7 @@ const WebTesterScreen: FC = () => {
     const results: typeof sqliResults = [];
     for (const p of payloads) {
       // Simulate — in a real implementation this would send HTTP requests to your authorised target
-      await new Promise(r => setTimeout(r, 120));
+      await new Promise(r => setTimeout(() => r(undefined), 120));
       const status = Math.random() > 0.75 ? 'POTENTIAL' : 'CLEAN';
       results.push({ payload: p.value, status, note: p.name });
     }
@@ -1018,7 +1018,7 @@ const WebTesterScreen: FC = () => {
     const payloads = PAYLOAD_LIBRARY.filter(p => p.category === 'xss');
     const results: typeof xssResults = [];
     for (const p of payloads) {
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise(r => setTimeout(() => r(undefined), 100));
       results.push({ payload: p.value, reflected: Math.random() > 0.6, encoded: p.encoding });
     }
     setXssResults(results);
@@ -1458,7 +1458,7 @@ const PayloadLabScreen: FC = () => {
       customPayload.split('').join('\x00'),
       customPayload.replace(/'/g, '%27').replace(/</g, '%3c'),
       `${customPayload}<!--`,
-      `${customPayload}`;'//`,
+      `${customPayload}//`,
     ];
     setMutatedPayloads(mutations);
   };
@@ -1761,7 +1761,7 @@ const LabControlScreen: FC = () => {
   const connectServer = async (srv: LabServer) => {
     addLog('info', 'LabControl', `Connecting to ${srv.host}:${srv.port}`);
     // Real: await fetch(`https://${srv.host}:${srv.port}/api/ping`, { headers: { 'X-API-Key': srv.apiKey } })
-    await new Promise(r => setTimeout(r, 800));
+    await new Promise(r => setTimeout(() => r(undefined), 800));
     setServers(prev => prev.map(s => s.id === srv.id ? { ...s, connected: true, lastSeen: Date.now() } : s));
     setActiveServer({ ...srv, connected: true, lastSeen: Date.now() });
     addLog('info', 'LabControl', `Connected to ${srv.label}`);
@@ -1782,7 +1782,7 @@ const LabControlScreen: FC = () => {
     setCmdRunning(true);
     addLog('info', 'LabControl', `Running remote module: ${module}`);
     // Real: POST https://{host}/api/run { module, args }
-    await new Promise(r => setTimeout(r, 1500));
+    await new Promise(r => setTimeout(() => r(undefined), 1500));
     const fakeOutput = [
       `[${new Date().toISOString()}] Executing: ${module} ${args}`,
       `[INFO] Initialising module...`,
@@ -2177,7 +2177,7 @@ const TAB_SCREENS = [
 ];
 
 const AppTabs: FC = () => (
-  <Tab.Navigator
+  <Tab.Navigator id="root"
     screenOptions={({ route }) => {
       const screen = TAB_SCREENS.find(s => s.name === route.name);
       return {
@@ -2212,6 +2212,7 @@ export default function App() {
       <NavigationContainer
         theme={{
           dark: true,
+          fonts: { regular: { fontFamily: "System", fontWeight: "400" as const }, medium: { fontFamily: "System", fontWeight: "500" as const }, bold: { fontFamily: "System", fontWeight: "700" as const }, heavy: { fontFamily: "System", fontWeight: "800" as const } },
           colors: {
             primary: T.cyan, background: T.bg1, card: T.bg0,
             text: T.textPrimary, border: T.border, notification: T.red,
@@ -2381,7 +2382,7 @@ app.post('/api/run/vuln', requireApiKey, authLimiter, async (req, res) => {
   const { target = 'localhost' } = req.body;
   writeSecLog('info', 'VulnTest', `Vuln test: ${target}`);
   // Placeholder — integrate Nuclei: execFile('nuclei', ['-u', target, '-json'], ...)
-  await new Promise(r => setTimeout(r, 1000));
+  await new Promise(r => setTimeout(() => r(undefined), 1000));
   res.json({
     target, findings: [
       { id: 'CVE-2023-1234', severity: 'medium', component: 'nginx/1.18.0', description: 'Example simulated finding' },
@@ -2437,3 +2438,8 @@ module.exports = app; // for testing
 // ══════════════════════════════════════════════════════════════════════
 // END OF FILE  —  CyberKit Pro v1.0.0
 // ══════════════════════════════════════════════════════════════════════
+
+
+
+
+

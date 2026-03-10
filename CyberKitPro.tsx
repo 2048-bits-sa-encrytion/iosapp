@@ -1458,7 +1458,7 @@ const PayloadLabScreen: FC = () => {
       customPayload.split('').join('\x00'),
       customPayload.replace(/'/g, '%27').replace(/</g, '%3c'),
       `${customPayload}<!--`,
-      `${customPayload}`;'//`,
+`${customPayload}//`,
     ];
     setMutatedPayloads(mutations);
   };

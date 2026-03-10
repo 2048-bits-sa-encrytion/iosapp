@@ -4,6 +4,12 @@
       "eas": {
         "projectId": "5980ca2c-f719-4a9b-89a4-dbd21c811c0d"
       }
+    },
+    "ios": {
+      "bundleIdentifier": "com.lolipoli.iosapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     }
   }
 }
