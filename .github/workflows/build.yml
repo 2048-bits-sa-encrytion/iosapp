@@ -12,11 +12,15 @@ jobs:
           node-version: '20'
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-      - name: Install EAS CLI
-        run: npm install -g eas-cli
+      - name: Install expo and eas
+        run: npm install expo@~50.0.14 --legacy-peer-deps
+      - name: Prebuild iOS
+        run: npx expo prebuild --platform ios --clean --no-install
+      - name: Install CocoaPods
+        run: |
+          cd ios
+          pod install
       - name: Build IPA
-        run: npx expo prebuild --platform ios --clean
-      - name: Archive IPA
         run: |
           cd ios
           xcodebuild -workspace iosapp.xcworkspace -scheme iosapp -configuration Release -sdk iphonesimulator -derivedDataPath build CODE_SIGNING_ALLOWED=NO
