@@ -12,18 +12,16 @@ jobs:
           node-version: '20'
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-      - name: Install expo and eas
+      - name: Install expo
         run: npm install expo@~50.0.14 --legacy-peer-deps
       - name: Prebuild iOS
         run: npx expo prebuild --platform ios --clean --no-install
       - name: Install CocoaPods
-        run: |
-          cd ios
-          pod install
+        run: cd ios && pod install
       - name: Build IPA
         run: |
           cd ios
-          xcodebuild -workspace iosapp.xcworkspace -scheme iosapp -configuration Release -sdk iphonesimulator -derivedDataPath build CODE_SIGNING_ALLOWED=NO
+          xcodebuild -workspace iosapp.xcworkspace -scheme iosapp -configuration Release -sdk iphonesimulator -derivedDataPath build CODE_SIGNING_ALLOWED=NO CLANG_CXX_LANGUAGE_STANDARD=c++17
           mkdir -p ../output
           find build -name "*.app" -exec cp -r {} ../output/ \;
       - uses: actions/upload-artifact@v4
