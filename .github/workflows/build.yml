@@ -18,13 +18,29 @@ jobs:
         run: npx expo prebuild --platform ios --clean --no-install
       - name: Patch Swift 6 issues
         run: |
-          find node_modules/expo-apple-authentication/ios -name "*.swift" | while read file; do
-            sed -i '' 's/switch error\.code {/switch error.code {\n    @unknown default: break/g' ""
-            sed -i '' 's/switch credentialState {/switch credentialState {\n    @unknown default: break/g' ""
-            sed -i '' 's/switch status {/switch status {\n    @unknown default: break/g' ""
-          done
-          find node_modules/expo-crypto/ios -name "*.swift" -exec sed -i '' 's/class LossyConversionException: Exception/class LossyConversionException: Exception, @unchecked Sendable/g' {} \;
-          find node_modules/expo-crypto/ios -name "*.swift" -exec sed -i '' 's/class FailedGeneratingRandomBytesException: GenericException<OSStatus>/class FailedGeneratingRandomBytesException: GenericException<OSStatus>, @unchecked Sendable/g' {} \;
+          python3 - <<'PYEOF'
+          import os, re
+          def patch(path, replacements):
+              if not os.path.exists(path): return
+              for root, dirs, files in os.walk(path):
+                  for f in files:
+                      if not f.endswith('.swift'): continue
+                      fp = os.path.join(root, f)
+                      txt = open(fp).read()
+                      for old, new in replacements:
+                          txt = txt.replace(old, new)
+                      open(fp, 'w').write(txt)
+          patch('node_modules/expo-apple-authentication/ios', [
+              ('switch error.code {', 'switch error.code {\n    @unknown default: break'),
+              ('switch credentialState {', 'switch credentialState {\n    @unknown default: break'),
+              ('switch status {', 'switch status {\n    @unknown default: break'),
+          ])
+          patch('node_modules/expo-crypto/ios', [
+              ('class LossyConversionException: Exception', 'class LossyConversionException: Exception, @unchecked Sendable'),
+              ('class FailedGeneratingRandomBytesException: GenericException<OSStatus>', 'class FailedGeneratingRandomBytesException: GenericException<OSStatus>, @unchecked Sendable'),
+          ])
+          print('Patched!')
+          PYEOF
       - name: Install CocoaPods
         run: cd ios && pod install
       - name: Build IPA
