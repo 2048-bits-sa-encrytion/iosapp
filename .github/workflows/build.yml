@@ -18,8 +18,9 @@ jobs:
         run: npm install expo@~51.0.0 --legacy-peer-deps
       - name: Prebuild iOS
         run: npx expo prebuild --platform ios --clean --no-install
-      - name: Patch Swift 6 issues
+      - name: Patch Podfile and Swift 6 issues
         run: |
+          sed -i '' '/:privacy_file_aggregation_enabled/d' ios/Podfile
           python3 - <<'PYEOF'
           import os
           def patch(path, replacements):
