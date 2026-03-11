@@ -10,6 +10,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Update CocoaPods
+        run: sudo gem install cocoapods
       - name: Install dependencies
         run: npm install --legacy-peer-deps
       - name: Install expo
@@ -19,7 +21,7 @@ jobs:
       - name: Patch Swift 6 issues
         run: |
           python3 - <<'PYEOF'
-          import os, re
+          import os
           def patch(path, replacements):
               if not os.path.exists(path): return
               for root, dirs, files in os.walk(path):
@@ -41,7 +43,7 @@ jobs:
           ])
           print('Patched!')
           PYEOF
-      - name: Install CocoaPods
+      - name: Install CocoaPods deps
         run: cd ios && pod install
       - name: Build IPA
         run: |
