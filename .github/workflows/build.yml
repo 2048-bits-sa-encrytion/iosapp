@@ -21,8 +21,18 @@ jobs:
       - name: Patch Podfile and Swift 6 issues
         run: |
           sed -i '' '/:privacy_file_aggregation_enabled/d' ios/Podfile
-          sed -i '' '/:ccache_enabled/d' ios/Podfile
           sed -i '' 's/use_react_native!/use_modular_headers!\n  use_react_native!/' ios/Podfile
+          cat >> ios/Podfile << 'EOF'
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      config.build_settings['CLANG_CXX_LIBRARY'] = 'libc++'
+    end
+  end
+end
+EOF
           python3 - <<'PYEOF'
           import os
           def patch(path, replacements):
