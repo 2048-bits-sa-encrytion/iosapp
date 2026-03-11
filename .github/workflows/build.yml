@@ -43,7 +43,7 @@ jobs:
           ])
           print('Patched!')
           PYEOF
-      - name: Install CocoaPods deps
+      - name: Install CocoaPods
         run: cd ios && pod install
       - name: Build IPA
         run: |
