@@ -16,15 +16,12 @@ jobs:
         run: npm install expo@~50.0.14 --legacy-peer-deps
       - name: Prebuild iOS
         run: npx expo prebuild --platform ios --clean --no-install
-      - name: Patch Podfile for C++17
-        run: |
-          sed -i '' 's/post_install do |installer|/post_install do |installer|\n    installer.pods_project.targets.each do |target|\n      target.build_configurations.each do |config|\n        config.build_settings["CLANG_CXX_LANGUAGE_STANDARD"] = "c++17"\n      end\n    end/' ios/Podfile
       - name: Install CocoaPods
         run: cd ios && pod install
       - name: Build IPA
         run: |
           cd ios
-          xcodebuild -workspace iosapp.xcworkspace -scheme iosapp -configuration Release -sdk iphonesimulator -derivedDataPath build CODE_SIGNING_ALLOWED=NO
+          xcodebuild -workspace iosapp.xcworkspace -scheme iosapp -configuration Release -sdk iphonesimulator -derivedDataPath build CODE_SIGNING_ALLOWED=NO EXCLUDED_ARCHS=x86_64
           mkdir -p ../output
           find build -name "*.app" -exec cp -r {} ../output/ \;
       - uses: actions/upload-artifact@v4
