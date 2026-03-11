@@ -21,6 +21,7 @@ jobs:
       - name: Patch Podfile and Swift 6 issues
         run: |
           sed -i '' '/:privacy_file_aggregation_enabled/d' ios/Podfile
+          sed -i '' '/:ccache_enabled/d' ios/Podfile
           sed -i '' 's/use_react_native!/use_modular_headers!\n  use_react_native!/' ios/Podfile
           python3 - <<'PYEOF'
           import os
