@@ -11,7 +11,7 @@ jobs:
         with:
           node-version: '20'
       - name: Update CocoaPods
-        run: sudo gem install cocoapods
+        run: sudo gem install cocoapods -v 1.15.2
       - name: Install dependencies
         run: npm install --legacy-peer-deps
       - name: Install expo
